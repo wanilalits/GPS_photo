@@ -14,7 +14,9 @@ function App() {
         (pos) => {
           const { latitude, longitude } = pos.coords;
           setGps({ latitude, longitude });
-          setTime(new Date().toLocaleString());
+          const gpsTime = new Date(pos.timestamp); // convert to human-readable format
+         
+          setTime(gpsTime.toLocaleString());
         },
         (err) => alert("Please enable GPS to continue.")
       );
