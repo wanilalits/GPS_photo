@@ -7,16 +7,23 @@ function App() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
+
+async function getAccurateTime() {
+  const res = await fetch("https://worldtimeapi.org/api/ip");
+  const data = await res.json();
+  return new Date(data.utc_datetime);
+}
+
   // Ask for GPS
   const requestGPS = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
+       async  (pos) => {
           const { latitude, longitude } = pos.coords;
           setGps({ latitude, longitude });
-          const gpsTime = new Date(pos.timestamp); // convert to human-readable format
-         
-          setTime(gpsTime.toLocaleString());
+            const accurateTime = await getAccurateTime();
+
+  setTime(accurateTime.toLocaleString());
         },
         (err) => alert("Please enable GPS to continue.")
       );
