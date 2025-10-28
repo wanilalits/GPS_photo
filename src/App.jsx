@@ -1,29 +1,35 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect  } from "react";
 
 function App() {
   const [photo, setPhoto] = useState(null);
   const [gps, setGps] = useState(null);
-  const [time, setTime] = useState(null);
+  const [time, setTime] = useState("null");
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
 
-async function getAccurateTime() {
-  const res = await fetch("https://worldtimeapi.org/api/ip");
-  const data = await res.json();
-  return new Date(data.utc_datetime);
-}
+  useEffect(() => {
+    async function fetchTime() {
+      const res = await fetch("https://api.ipgeolocation.io/timezone?apiKey=654477d556fb4bd58a4ec42342ce79a6&tz=Asia/Kolkata");
+      const data = await res.json();
+      //const time = new Date(data.utc_datetime);
+      console.log("Accurate UTC time:", data.date_time);
+      setTime(data.date_time);
+    }
+
+    fetchTime();
+  }, []); // [] ensures it runs only once on page load
+
+
 
   // Ask for GPS
   const requestGPS = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-       async  (pos) => {
+         (pos) => {
           const { latitude, longitude } = pos.coords;
           setGps({ latitude, longitude });
-            const accurateTime = await getAccurateTime();
-
-  setTime(accurateTime.toLocaleString());
+        
         },
         (err) => alert("Please enable GPS to continue.")
       );
@@ -77,6 +83,7 @@ async function getAccurateTime() {
     link.click();
   };
 
+ 
   return (
     <div style={{ textAlign: "center", padding: 20 }}>
       <h2>📸 GPS Photo Capture</h2>
